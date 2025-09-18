@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors({ 
     origin: [
         /^http:\/\/localhost:\d+$/,  // localhost para desarrollo
-        "https://frontendchat-v0pp.onrender.com"  // dominio de producción
+        "https://frontendchatweb.onrender.com"  // dominio de producción
     ], 
     credentials: true  // Habilitar cookies y headers de autenticación
 }));
