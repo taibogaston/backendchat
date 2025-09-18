@@ -260,4 +260,24 @@ router.post("/resend-verification", async (req, res) => {
         res.status(500).json({ error: "Error reenviando verificación" });
     }
 });
+// Endpoint temporal para debug - obtener token de verificación
+router.get("/debug-token/:email", async (req, res) => {
+    try {
+        const { email } = req.params;
+        const user = await user_model_1.User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        res.json({
+            email: user.email,
+            verificationToken: user.verificationToken,
+            emailVerified: user.emailVerified,
+            testUrl: `http://localhost:4000/auth/verify/${user.verificationToken}`
+        });
+    }
+    catch (err) {
+        console.error("Error obteniendo token:", err);
+        res.status(500).json({ error: "Error obteniendo token" });
+    }
+});
 exports.default = router;

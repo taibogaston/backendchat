@@ -15,7 +15,8 @@ app.use(express.json());
 app.use(cors({ 
     origin: [
         /^http:\/\/localhost:\d+$/,  // localhost para desarrollo
-        "https://frontendchatweb.onrender.com"  // dominio de producción
+        "https://frontendchatweb.onrender.com",  // dominio de producción
+        process.env.FRONTEND_URL || "http://localhost:3000"  // URL del frontend desde env
     ], 
     credentials: true,  // Habilitar cookies y headers de autenticación
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -40,13 +41,6 @@ app.use("/api/onboarding", onboardingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
-
-// Rutas sin prefijo para compatibilidad
-app.use("/auth", authRoutes);
-app.use("/onboarding", onboardingRoutes);
-app.use("/users", userRoutes);
-app.use("/chats", chatRoutes);
-app.use("/messages", messageRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
