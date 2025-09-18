@@ -12,12 +12,35 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+// Configuración de CORS más robusta
+const allowedOrigins = [
+    /^http:\/\/localhost:\d+$/,  // localhost para desarrollo
+    "https://frontendchatweb.onrender.com",  // dominio de producción
+    process.env.FRONTEND_URL || "http://localhost:3000"  // URL del frontend desde env
+];
+
 app.use(cors({ 
-    origin: [
-        /^http:\/\/localhost:\d+$/,  // localhost para desarrollo
-        "https://frontendchatweb.onrender.com",  // dominio de producción
-        process.env.FRONTEND_URL || "http://localhost:3000"  // URL del frontend desde env
-    ], 
+    origin: (origin, callback) => {
+        // Permitir requests sin origin (mobile apps, postman, etc.)
+        if (!origin) return callback(null, true);
+        
+        // Verificar si el origin está en la lista permitida
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            if (typeof allowedOrigin === 'string') {
+                return origin === allowedOrigin;
+            } else if (allowedOrigin instanceof RegExp) {
+                return allowedOrigin.test(origin);
+            }
+            return false;
+        });
+        
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.log('🚫 CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,  // Habilitar cookies y headers de autenticación
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
