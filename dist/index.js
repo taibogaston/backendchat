@@ -34,11 +34,18 @@ app.options('*', (req, res) => {
     res.sendStatus(200);
 });
 (0, db_1.connectDB)();
+// Rutas con prefijo /api/
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/onboarding", onboarding_routes_1.default);
 app.use("/api/users", user_routes_1.default);
 app.use("/api/chats", chat_routes_1.default);
 app.use("/api/messages", message_routes_1.default);
+// Rutas sin prefijo para compatibilidad
+app.use("/auth", auth_routes_1.default);
+app.use("/onboarding", onboarding_routes_1.default);
+app.use("/users", user_routes_1.default);
+app.use("/chats", chat_routes_1.default);
+app.use("/messages", message_routes_1.default);
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

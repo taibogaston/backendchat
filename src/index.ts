@@ -34,11 +34,19 @@ app.options('*', (req, res) => {
 
 connectDB();
 
+// Rutas con prefijo /api/
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
+
+// Rutas sin prefijo para compatibilidad
+app.use("/auth", authRoutes);
+app.use("/onboarding", onboardingRoutes);
+app.use("/users", userRoutes);
+app.use("/chats", chatRoutes);
+app.use("/messages", messageRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
