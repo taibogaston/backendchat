@@ -15,7 +15,13 @@ const onboarding_routes_1 = __importDefault(require("./routes/onboarding.routes"
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({ origin: [/^http:\/\/localhost:\d+$/], credentials: false }));
+app.use((0, cors_1.default)({
+    origin: [
+        /^http:\/\/localhost:\d+$/, // localhost para desarrollo
+        "https://frontendchat-v0pp.onrender.com" // dominio de producción
+    ],
+    credentials: true // Habilitar cookies y headers de autenticación
+}));
 (0, db_1.connectDB)();
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/onboarding", onboarding_routes_1.default);

@@ -12,7 +12,13 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: [/^http:\/\/localhost:\d+$/], credentials: false }));
+app.use(cors({ 
+    origin: [
+        /^http:\/\/localhost:\d+$/,  // localhost para desarrollo
+        "https://frontendchat-v0pp.onrender.com"  // dominio de producción
+    ], 
+    credentials: true  // Habilitar cookies y headers de autenticación
+}));
 
 connectDB();
 
