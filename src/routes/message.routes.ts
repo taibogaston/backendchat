@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Message } from "../models/message.model";
 import {Chat} from "../models/chat.model";
 import {chatWithAI} from "../services/ai.service";
+import { CharacterService } from "../services/character.service";
 import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -133,10 +134,24 @@ router.post("/:chatId", authenticateToken, async (req, res) => {
                 content: m.content
             }));
 
-            // Pasar información del personaje al servicio de IA
+            // Obtener el personaje completo de la base de datos
+            const character = await CharacterService.getCharacterByName(chat.partner.nombre);
             console.log("👤 Personaje del chat:", chat.partner);
+            console.log("📚 Personaje completo encontrado:", character ? "Sí" : "No");
+            
+            // Pasar información del personaje al servicio de IA
             const aiResponse = await chatWithAI(messages, chat.partner as any);
             console.log("🤖 Respuesta de la IA:", aiResponse);
+            
+            // Validar consistencia del personaje si existe
+            if (character) {
+                const validation = CharacterService.validateCharacterConsistency(character, aiResponse);
+                if (!validation.isValid) {
+                    console.warn("⚠️ Inconsistencias detectadas en la respuesta:", validation.violations);
+                } else {
+                    console.log("✅ Respuesta consistente con la personalidad del personaje");
+                }
+            }
 
             // Detecta si la IA presentó un nuevo amigo - regex flexible y multilínea
             let match = aiResponse.match(/NUEVO_AMIGO:\s*(\{[\s\S]*?\})/);

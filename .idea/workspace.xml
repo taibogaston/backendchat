@@ -4,7 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1d2b3bed-20b7-4067-b81c-a349779c70d9" name="Changes" comment="" />
+    <list default="true" id="1d2b3bed-20b7-4067-b81c-a349779c70d9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/AUTHENTICATION_SETUP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEBUG_NUEVO_PERSONAJE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EJEMPLOS_PERSONAJES_AUTENTICOS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FLUJO_ACTUALIZADO.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NUEVO_PERSONAJE_USAGE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TEST_PERSONAJES.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/config/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/config/db.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/middleware/auth.middleware.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/middleware/auth.middleware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/chat.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/chat.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/message.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/message.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/models/user.model.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/models/user.model.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/prompts/roleplayPrompt.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/prompts/roleplayPrompt.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/auth.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/auth.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/chat.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/chat.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/message.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/message.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/onboarding.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/onboarding.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/routes/user.routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/routes/user.routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/services/ai.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/services/ai.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/services/email.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/services/email.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/env-setup.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/db.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/db.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/message.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/message.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/ai.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/ai.service.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,10 +72,11 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "22.11.0",
     "javascript.nodejs.core.library.typings.version": "22.18.4",
-    "last_opened_file_path": "C:/Users/Gasto/Downloads/deploychatbot/backend",
+    "last_opened_file_path": "C:/Users/Gasto/WebstormProjects/backendchat",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -86,6 +114,7 @@
       <workItem from="1758061066593" duration="3277000" />
       <workItem from="1758149348752" duration="1072000" />
       <workItem from="1758196513459" duration="339000" />
+      <workItem from="1759068722434" duration="5000" />
     </task>
     <servers />
   </component>

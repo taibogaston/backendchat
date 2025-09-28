@@ -12,15 +12,39 @@ const chat_routes_1 = __importDefault(require("./routes/chat.routes"));
 const message_routes_1 = __importDefault(require("./routes/message.routes"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const onboarding_routes_1 = __importDefault(require("./routes/onboarding.routes"));
+const character_routes_1 = __importDefault(require("./routes/character.routes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+// Configuración de CORS más robusta
+const allowedOrigins = [
+    /^http:\/\/localhost:\d+$/, // localhost para desarrollo
+    "https://frontendchatweb.onrender.com", // dominio de producción
+    process.env.FRONTEND_URL || "http://localhost:3000" // URL del frontend desde env
+];
 app.use((0, cors_1.default)({
-    origin: [
-        /^http:\/\/localhost:\d+$/, // localhost para desarrollo
-        "https://frontendchatweb.onrender.com", // dominio de producción
-        process.env.FRONTEND_URL || "http://localhost:3000" // URL del frontend desde env
-    ],
+    origin: (origin, callback) => {
+        // Permitir requests sin origin (mobile apps, postman, etc.)
+        if (!origin)
+            return callback(null, true);
+        // Verificar si el origin está en la lista permitida
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            if (typeof allowedOrigin === 'string') {
+                return origin === allowedOrigin;
+            }
+            else if (allowedOrigin instanceof RegExp) {
+                return allowedOrigin.test(origin);
+            }
+            return false;
+        });
+        if (isAllowed) {
+            callback(null, true);
+        }
+        else {
+            console.log('🚫 CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true, // Habilitar cookies y headers de autenticación
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -41,6 +65,7 @@ app.use("/api/onboarding", onboarding_routes_1.default);
 app.use("/api/users", user_routes_1.default);
 app.use("/api/chats", chat_routes_1.default);
 app.use("/api/messages", message_routes_1.default);
+app.use("/api/characters", character_routes_1.default);
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

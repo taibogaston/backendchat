@@ -1,5 +1,6 @@
 import axios from "axios";
-import { roleplayPrompt } from "../prompts/roleplayPrompt";
+import { ICharacter } from "../models/character.model";
+import { CharacterService } from "./character.service";
 
 type Partner = {
     nombre: string;
@@ -15,25 +16,116 @@ export async function chatWithAI(
     const OPENAI_KEY = process.env.OPENAI_API_KEY;
     if (!OPENAI_KEY) throw new Error("OPENAI_API_KEY no definido en .env");
 
-    const personaInstruction = partner
-        ? `\n\nContexto de personaje asignado al chat:\n- Nombre: ${partner.nombre}\n- Nacionalidad: ${partner.nacionalidad}\n- Género: ${partner.genero}\n- Idioma a usar principalmente: ${partner.idioma_objetivo}\n\nInstrucciones adicionales obligatorias:\n- Responde SIEMPRE como ${partner.nombre} de ${partner.nacionalidad}.\n- Usa principalmente el idioma "${partner.idioma_objetivo}" a menos que el usuario pida explícitamente otra cosa.\n- Mantén coherencia de identidad en todas las respuestas de este chat.`
-        : "";
+    let systemPrompt = "";
+    
+    if (partner) {
+        // Buscar el personaje completo en la base de datos
+        const character = await CharacterService.getCharacterByName(partner.nombre);
+        
+        if (character) {
+            // Usar el prompt específico del personaje
+            systemPrompt = CharacterService.generateCharacterPrompt(character);
+        } else {
+            // Fallback al sistema anterior si no se encuentra el personaje
+            systemPrompt = `Eres ${partner.nombre} de ${partner.nacionalidad}. 
+            - Género: ${partner.genero}
+            - Idioma principal: ${partner.idioma_objetivo}
+            - Mantén tu personalidad consistente en todas las respuestas.
+            - Solo habla en ${partner.idioma_objetivo}.
+            - Responde como si fueras realmente ${partner.nombre}.`;
+        }
+    } else {
+        // Prompt genérico para cuando no hay personaje específico
+        systemPrompt = `Eres un asistente de aprendizaje de idiomas. Ayuda al usuario a practicar idiomas de manera natural y conversacional.`;
+    }
 
     const body = {
         model: "gpt-4o-mini",
         messages: [
-            { role: "system", content: roleplayPrompt + personaInstruction },
+            { role: "system", content: systemPrompt },
             ...messages
         ],
-        max_tokens: 300
+        max_tokens: 400,
+        temperature: 0.8 // Aumentar creatividad para personalidades más vivas
     };
 
-    const res = await axios.post("https://api.openai.com/v1/chat/completions", body, {
-        headers: {
-            Authorization: `Bearer ${OPENAI_KEY}`,
-            "Content-Type": "application/json"
-        }
-    });
+    try {
+        const res = await axios.post("https://api.openai.com/v1/chat/completions", body, {
+            headers: {
+                Authorization: `Bearer ${OPENAI_KEY}`,
+                "Content-Type": "application/json"
+            }
+        });
 
-    return res.data.choices?.[0]?.message?.content || "";
+        const response = res.data.choices?.[0]?.message?.content || "";
+        
+        // Validar consistencia del personaje si existe
+        if (partner) {
+            const character = await CharacterService.getCharacterByName(partner.nombre);
+            if (character) {
+                const validation = CharacterService.validateCharacterConsistency(character, response);
+                if (!validation.isValid) {
+                    console.warn("⚠️ Inconsistencias detectadas en la respuesta:", validation.violations);
+                }
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error("❌ Error en chatWithAI:", error);
+        throw error;
+    }
+}
+
+/**
+ * Función para crear un nuevo chat con un personaje específico
+ */
+export async function createChatWithCharacter(
+    userId: string,
+    characterId: string
+): Promise<{ chatId: string; character: ICharacter } | null> {
+    try {
+        const character = await CharacterService.getCharacterById(characterId);
+        if (!character) {
+            throw new Error("Personaje no encontrado");
+        }
+
+        // Crear el chat con la información del personaje
+        const { Chat } = await import("../models/chat.model");
+        const newChat = await Chat.create({
+            userId,
+            partner: {
+                nombre: character.nombre,
+                nacionalidad: character.nacionalidad,
+                genero: character.genero,
+                idioma_objetivo: character.idioma_objetivo
+            },
+            activo: true
+        });
+
+        return {
+            chatId: (newChat._id as any).toString(),
+            character
+        };
+    } catch (error) {
+        console.error("❌ Error creando chat con personaje:", error);
+        return null;
+    }
+}
+
+/**
+ * Función para obtener personajes recomendados basados en preferencias del usuario
+ */
+export async function getRecommendedCharacters(
+    idioma_objetivo?: string,
+    nacionalidad?: string,
+    genero?: "M" | "F"
+): Promise<ICharacter[]> {
+    const criteria: any = {};
+    
+    if (idioma_objetivo) criteria.idioma = idioma_objetivo;
+    if (nacionalidad) criteria.nacionalidad = nacionalidad;
+    if (genero) criteria.genero = genero;
+    
+    return await CharacterService.searchCharacters(criteria);
 }

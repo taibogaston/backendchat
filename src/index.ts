@@ -7,6 +7,7 @@ import chatRoutes from "./routes/chat.routes";
 import messageRoutes from "./routes/message.routes";
 import authRoutes from "./routes/auth.routes";
 import onboardingRoutes from "./routes/onboarding.routes";
+import characterRoutes from "./routes/character.routes";
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use("/api/onboarding", onboardingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/characters", characterRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
