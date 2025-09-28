@@ -4,10 +4,10 @@ const express_1 = require("express");
 const chat_model_1 = require("../models/chat.model");
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const router = (0, express_1.Router)();
-// Obtener todos los chats del usuario autenticado
+// Obtener todos los chats del usuario autenticado (solo activos)
 router.get("/", auth_middleware_1.authenticateToken, async (req, res) => {
     try {
-        const chats = await chat_model_1.Chat.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        const chats = await chat_model_1.Chat.find({ userId: req.user._id, activo: true }).sort({ createdAt: -1 });
         res.json(chats);
     }
     catch (err) {

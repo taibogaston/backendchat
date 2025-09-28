@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const user_model_1 = require("../models/user.model");
-const chat_model_1 = require("../models/chat.model");
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const router = (0, express_1.Router)();
 // Completar onboarding
@@ -29,13 +28,6 @@ router.post("/complete", auth_middleware_1.authenticateToken, async (req, res) =
         if (!user) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
-        // Crear personaje por defecto basado en el idioma objetivo
-        const defaultPartner = createDefaultPartner(idioma_objetivo, preferencia_genero);
-        const chat = await chat_model_1.Chat.create({
-            userId: user._id,
-            partner: defaultPartner,
-            activo: true
-        });
         res.json({
             message: "Onboarding completado exitosamente",
             user: {
@@ -50,12 +42,6 @@ router.post("/complete", auth_middleware_1.authenticateToken, async (req, res) =
                 edad: user.edad,
                 preferencia_genero: user.preferencia_genero,
                 onboardingCompleted: user.onboardingCompleted
-            },
-            defaultChat: {
-                id: chat._id,
-                partner: chat.partner,
-                activo: chat.activo,
-                createdAt: chat.createdAt
             }
         });
     }
@@ -81,56 +67,4 @@ router.get("/status", auth_middleware_1.authenticateToken, async (req, res) => {
         res.status(500).json({ error: "Error obteniendo estado del onboarding" });
     }
 });
-// Función para crear personaje por defecto según idioma objetivo
-function createDefaultPartner(idiomaObjetivo, preferenciaGenero) {
-    var _a, _b;
-    const partners = {
-        "español": {
-            "F": { nombre: "Camila", nacionalidad: "Colombia", genero: "F" },
-            "M": { nombre: "Mateo", nacionalidad: "España", genero: "M" },
-            "A": { nombre: "Sofia", nacionalidad: "México", genero: "F" }
-        },
-        "inglés": {
-            "F": { nombre: "Emily", nacionalidad: "Estados Unidos", genero: "F" },
-            "M": { nombre: "James", nacionalidad: "Reino Unido", genero: "M" },
-            "A": { nombre: "Sarah", nacionalidad: "Canadá", genero: "F" }
-        },
-        "francés": {
-            "F": { nombre: "Marie", nacionalidad: "Francia", genero: "F" },
-            "M": { nombre: "Pierre", nacionalidad: "Francia", genero: "M" },
-            "A": { nombre: "Claire", nacionalidad: "Francia", genero: "F" }
-        },
-        "portugués": {
-            "F": { nombre: "Ana", nacionalidad: "Brasil", genero: "F" },
-            "M": { nombre: "João", nacionalidad: "Brasil", genero: "M" },
-            "A": { nombre: "Isabela", nacionalidad: "Brasil", genero: "F" }
-        },
-        "alemán": {
-            "F": { nombre: "Anna", nacionalidad: "Alemania", genero: "F" },
-            "M": { nombre: "Hans", nacionalidad: "Alemania", genero: "M" },
-            "A": { nombre: "Lisa", nacionalidad: "Alemania", genero: "F" }
-        },
-        "italiano": {
-            "F": { nombre: "Giulia", nacionalidad: "Italia", genero: "F" },
-            "M": { nombre: "Marco", nacionalidad: "Italia", genero: "M" },
-            "A": { nombre: "Sofia", nacionalidad: "Italia", genero: "F" }
-        },
-        "japonés": {
-            "F": { nombre: "Yuki", nacionalidad: "Japón", genero: "F" },
-            "M": { nombre: "Hiroshi", nacionalidad: "Japón", genero: "M" },
-            "A": { nombre: "Sakura", nacionalidad: "Japón", genero: "F" }
-        }
-    };
-    const idiomaKey = idiomaObjetivo.toLowerCase();
-    const generoKey = preferenciaGenero || "A";
-    const partner = ((_a = partners[idiomaKey]) === null || _a === void 0 ? void 0 : _a[generoKey]) || ((_b = partners[idiomaKey]) === null || _b === void 0 ? void 0 : _b["A"]) || {
-        nombre: "Alex",
-        nacionalidad: "Internacional",
-        genero: "A"
-    };
-    return {
-        ...partner,
-        idioma_objetivo: idiomaObjetivo
-    };
-}
 exports.default = router;

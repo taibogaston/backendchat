@@ -104,6 +104,7 @@ async function chatWithAI(messages, partner) {
 }
 /**
  * Función para crear un nuevo chat con un personaje específico
+ * Solo crea el chat si no existe uno previo con el mismo personaje
  */
 async function createChatWithCharacter(userId, characterId) {
     try {
@@ -111,8 +112,23 @@ async function createChatWithCharacter(userId, characterId) {
         if (!character) {
             throw new Error("Personaje no encontrado");
         }
-        // Crear el chat con la información del personaje
+        // Verificar si ya existe un chat con este personaje (verificación más robusta)
         const { Chat } = await Promise.resolve().then(() => __importStar(require("../models/chat.model")));
+        const existingChat = await Chat.findOne({
+            userId,
+            "partner.nombre": character.nombre,
+            "partner.nacionalidad": character.nacionalidad,
+            "partner.idioma_objetivo": character.idioma_objetivo,
+            activo: true
+        });
+        if (existingChat) {
+            return {
+                chatId: existingChat._id.toString(),
+                character,
+                isNew: false
+            };
+        }
+        // Crear nuevo chat solo si no existe
         const newChat = await Chat.create({
             userId,
             partner: {
@@ -125,11 +141,11 @@ async function createChatWithCharacter(userId, characterId) {
         });
         return {
             chatId: newChat._id.toString(),
-            character
+            character,
+            isNew: true
         };
     }
     catch (error) {
-        console.error("❌ Error creando chat con personaje:", error);
         return null;
     }
 }
