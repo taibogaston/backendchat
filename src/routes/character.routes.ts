@@ -110,11 +110,7 @@ router.post("/:characterId/chat", authenticateToken, async (req, res) => {
             return res.status(404).json({ error: "No se pudo crear el chat con el personaje" });
         }
         
-        res.json({
-            success: true,
-            chatId: result.chatId,
-            character: result.character
-        });
+        res.json(result);
     } catch (error) {
         console.error("Error creando chat con personaje:", error);
         res.status(500).json({ error: "Error creando chat con personaje" });

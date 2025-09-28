@@ -106,10 +106,6 @@ router.post("/:chatId", authenticateToken, async (req, res) => {
         const { sender, content } = req.body;
         const { chatId } = req.params;
         
-        console.log("📨 Mensaje recibido:");
-        console.log("   ChatId:", chatId);
-        console.log("   Sender:", sender);
-        console.log("   Content:", content);
 
         const userMsg = await Message.create({
             chatId,
@@ -136,36 +132,28 @@ router.post("/:chatId", authenticateToken, async (req, res) => {
 
             // Obtener el personaje completo de la base de datos
             const character = await CharacterService.getCharacterByName(chat.partner.nombre);
-            console.log("👤 Personaje del chat:", chat.partner);
-            console.log("📚 Personaje completo encontrado:", character ? "Sí" : "No");
             
             // Pasar información del personaje al servicio de IA
             const aiResponse = await chatWithAI(messages, chat.partner as any);
-            console.log("🤖 Respuesta de la IA:", aiResponse);
             
             // Validar consistencia del personaje si existe
             if (character) {
                 const validation = CharacterService.validateCharacterConsistency(character, aiResponse);
-                if (!validation.isValid) {
-                    console.warn("⚠️ Inconsistencias detectadas en la respuesta:", validation.violations);
-                } else {
-                    console.log("✅ Respuesta consistente con la personalidad del personaje");
-                }
             }
 
-            // Detecta si la IA presentó un nuevo amigo - regex flexible y multilínea
-            let match = aiResponse.match(/NUEVO_AMIGO:\s*(\{[\s\S]*?\})/);
-            console.log("🔍 Match encontrado:", match);
-            console.log("🔍 Texto completo de búsqueda:", aiResponse);
+            // Detecta si la IA presentó un nuevo amigo - DESHABILITADO TEMPORALMENTE
+            // let match = aiResponse.match(/NUEVO_AMIGO:\s*(\{[\s\S]*?\})/);
+            // console.log("🔍 Match encontrado:", match);
+            // console.log("🔍 Texto completo de búsqueda:", aiResponse);
             
             // Búsqueda alternativa si no encuentra el patrón exacto
-            if (!match) {
-                console.log("🔍 Intentando búsqueda alternativa...");
-                match = aiResponse.match(/NUEVO_AMIGO[:\s]*(\{[\s\S]*?\})/);
-                console.log("🔍 Match alternativo:", match);
-            }
+            // if (!match) {
+            //     console.log("🔍 Intentando búsqueda alternativa...");
+            //     match = aiResponse.match(/NUEVO_AMIGO[:\s]*(\{[\s\S]*?\})/);
+            //     console.log("🔍 Match alternativo:", match);
+            // }
             
-            if (match) {
+            if (false) {
                 try {
                     // Extrae los datos del nuevo amigo
                     console.log("📝 JSON extraído:", match[1]);
@@ -178,15 +166,30 @@ router.post("/:chatId", authenticateToken, async (req, res) => {
                         throw new Error("Datos del nuevo amigo incompletos");
                     }
                     
-                    // Usar el userId del usuario autenticado
-                    console.log("🆕 Creando nuevo chat...");
-                    newChat = await Chat.create({
+                    // Verificar si ya existe un chat con este personaje
+                    console.log("🔍 Verificando si ya existe chat con", partner.nombre);
+                    const existingChat = await Chat.findOne({
                         userId: req.user._id,
-                        partner,
+                        "partner.nombre": partner.nombre,
+                        "partner.nacionalidad": partner.nacionalidad,
                         activo: true
                     });
-                    newChatId = newChat._id;
-                    console.log("✅ Nuevo chat creado:", newChat._id);
+
+                    if (existingChat) {
+                        console.log("📱 Chat existente encontrado:", existingChat._id);
+                        newChat = existingChat;
+                        newChatId = existingChat._id;
+                    } else {
+                        // Usar el userId del usuario autenticado
+                        console.log("🆕 Creando nuevo chat...");
+                        newChat = await Chat.create({
+                            userId: req.user._id,
+                            partner,
+                            activo: true
+                        });
+                        newChatId = newChat._id;
+                        console.log("✅ Nuevo chat creado:", newChat._id);
+                    }
                     
                     // Limpia el mensaje para el usuario (sin la línea NUEVO_AMIGO)
                     const cleanResponse = aiResponse.replace(/NUEVO_AMIGO:[\s\S]*$/, "").trim();

@@ -4,10 +4,10 @@ import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = Router();
 
-// Obtener todos los chats del usuario autenticado
+// Obtener todos los chats del usuario autenticado (solo activos)
 router.get("/", authenticateToken, async (req, res) => {
     try {
-        const chats = await Chat.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        const chats = await Chat.find({ userId: req.user._id, activo: true }).sort({ createdAt: -1 });
         res.json(chats);
     } catch (err) {
         res.status(500).json({ error: "Error obteniendo chats" });
