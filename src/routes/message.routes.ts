@@ -141,94 +141,20 @@ router.post("/:chatId", authenticateToken, async (req, res) => {
                 const validation = CharacterService.validateCharacterConsistency(character, aiResponse);
             }
 
-            // Detecta si la IA presentó un nuevo amigo - DESHABILITADO TEMPORALMENTE
-            // let match = aiResponse.match(/NUEVO_AMIGO:\s*(\{[\s\S]*?\})/);
-            // console.log("🔍 Match encontrado:", match);
-            // console.log("🔍 Texto completo de búsqueda:", aiResponse);
-            
-            // Búsqueda alternativa si no encuentra el patrón exacto
-            // if (!match) {
-            //     console.log("🔍 Intentando búsqueda alternativa...");
-            //     match = aiResponse.match(/NUEVO_AMIGO[:\s]*(\{[\s\S]*?\})/);
-            //     console.log("🔍 Match alternativo:", match);
-            // }
-            
-            if (false) {
-                try {
-                    // Extrae los datos del nuevo amigo
-                    console.log("📝 JSON extraído:", match[1]);
-                    const partner = JSON.parse(match[1]);
-                    console.log("👤 Partner parseado:", partner);
-                    
-                    // Valida que el partner tenga los campos requeridos
-                    if (!partner.nombre || !partner.nacionalidad || !partner.genero || !partner.idioma_objetivo) {
-                        console.error("❌ Datos incompletos:", partner);
-                        throw new Error("Datos del nuevo amigo incompletos");
-                    }
-                    
-                    // Verificar si ya existe un chat con este personaje
-                    console.log("🔍 Verificando si ya existe chat con", partner.nombre);
-                    const existingChat = await Chat.findOne({
-                        userId: req.user._id,
-                        "partner.nombre": partner.nombre,
-                        "partner.nacionalidad": partner.nacionalidad,
-                        activo: true
-                    });
-
-                    if (existingChat) {
-                        console.log("📱 Chat existente encontrado:", existingChat._id);
-                        newChat = existingChat;
-                        newChatId = existingChat._id;
-                    } else {
-                        // Usar el userId del usuario autenticado
-                        console.log("🆕 Creando nuevo chat...");
-                        newChat = await Chat.create({
-                            userId: req.user._id,
-                            partner,
-                            activo: true
-                        });
-                        newChatId = newChat._id;
-                        console.log("✅ Nuevo chat creado:", newChat._id);
-                    }
-                    
-                    // Limpia el mensaje para el usuario (sin la línea NUEVO_AMIGO)
-                    const cleanResponse = aiResponse.replace(/NUEVO_AMIGO:[\s\S]*$/, "").trim();
-                    aiMsg = await Message.create({
-                        chatId,
-                        sender: "ia",
-                        content: cleanResponse
-                    });
-                } catch (error) {
-                    console.error("❌ Error creando nuevo chat:", error);
-                    // Si hay error, guarda el mensaje normal sin crear nuevo chat
-                    aiMsg = await Message.create({
-                        chatId,
-                        sender: "ia",
-                        content: aiResponse
-                    });
-                }
-            } else {
-                aiMsg = await Message.create({
-                    chatId,
-                    sender: "ia",
-                    content: aiResponse
-                });
-            }
+            // Crear mensaje de IA
+            aiMsg = await Message.create({
+                chatId,
+                sender: "ia",
+                content: aiResponse
+            });
         }
 
-        // Estructura de respuesta mejorada
-        const response: any = {
+        // Estructura de respuesta
+        const response = {
             userMsg,
-            aiMsg,
-            newChat: newChat ? {
-                id: newChat._id,
-                partner: newChat.partner,
-                activo: newChat.activo,
-                createdAt: newChat.createdAt
-            } : null
+            aiMsg
         };
 
-        console.log("📤 Respuesta final:", JSON.stringify(response, null, 2));
         res.json(response);
     } catch (err) {
         res.status(500).json({ error: "Error enviando mensaje" });
