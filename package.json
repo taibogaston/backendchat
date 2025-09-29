@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start:check": "bash start.sh",
+    "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -23,13 +25,13 @@
     "nodemailer": "^7.0.6",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "resend": "^6.1.0"
+    "resend": "^6.1.0",
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
     "@types/node": "^20.4.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.1.6"
+    "ts-node-dev": "^2.0.0"
   }
 }
