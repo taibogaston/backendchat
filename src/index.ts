@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
+import { CharacterService } from "./services/character.service";
 import userRoutes from "./routes/user.routes";
 import chatRoutes from "./routes/chat.routes";
 import messageRoutes from "./routes/message.routes";
@@ -57,7 +58,23 @@ app.options('*', (req, res) => {
     res.sendStatus(200);
 });
 
-connectDB();
+// Función para inicializar la base de datos
+async function initializeDatabase() {
+    try {
+        console.log("🔄 Inicializando base de datos...");
+        
+        // Conectar a la base de datos
+        await connectDB();
+        
+        // Sembrar personajes si la base de datos está vacía
+        await CharacterService.seedCharacters();
+        
+        console.log("✅ Base de datos inicializada correctamente");
+    } catch (error) {
+        console.error("❌ Error inicializando base de datos:", error);
+        process.exit(1);
+    }
+}
 
 // Rutas con prefijo /api/
 app.use("/api/auth", authRoutes);
@@ -68,6 +85,10 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/characters", characterRoutes);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+
+// Inicializar base de datos y luego iniciar servidor
+initializeDatabase().then(() => {
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    });
 });

@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "start:check": "bash start.sh",
-    "postbuild": "echo 'Build completed successfully'"
+    "postbuild": "echo 'Build completed successfully'",
+    "populate-db": "npx ts-node src/scripts/migrate-characters.ts",
+    "populate-db:win": "populate-db.bat"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
