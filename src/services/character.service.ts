@@ -22,6 +22,27 @@ export class CharacterService {
     }
 
     /**
+     * Fuerza la actualización de personajes (elimina todos y agrega los nuevos)
+     */
+    static async forceUpdateCharacters(): Promise<void> {
+        try {
+            console.log("🔄 Forzando actualización de personajes...");
+            
+            // Eliminar todos los personajes existentes
+            await Character.deleteMany({});
+            console.log("🗑️ Personajes existentes eliminados");
+            
+            // Agregar todos los personajes del seed
+            await Character.insertMany(charactersSeed);
+            console.log(`✅ ${charactersSeed.length} personajes agregados exitosamente`);
+            
+        } catch (error) {
+            console.error("❌ Error actualizando personajes:", error);
+            throw error;
+        }
+    }
+
+    /**
      * Obtiene todos los personajes activos
      */
     static async getAllCharacters(): Promise<ICharacter[]> {
