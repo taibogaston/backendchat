@@ -4,7 +4,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "tsc && npm run fix-imports",
+    "fix-imports": "fix-imports.bat",
     "start": "node dist/index.js",
     "start:check": "bash start.sh",
     "postbuild": "echo 'Build completed successfully'",
