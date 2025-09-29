@@ -4,7 +4,7 @@ const express_1 = require("express");
 const message_model_1 = require("../models/message.model");
 const chat_model_1 = require("../models/chat.model");
 const ai_service_1 = require("../services/ai.service");
-const character_service_1 = require("../services/character.service");
+const services_1 = require("../services");
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const router = (0, express_1.Router)();
 // Listar mensajes de un chat (solo si pertenece al usuario autenticado)
@@ -114,12 +114,12 @@ router.post("/:chatId", auth_middleware_1.authenticateToken, async (req, res) =>
                 content: m.content
             }));
             // Obtener el personaje completo de la base de datos
-            const character = await character_service_1.CharacterService.getCharacterByName(chat.partner.nombre);
+            const character = await services_1.CharacterService.getCharacterByName(chat.partner.nombre);
             // Pasar información del personaje al servicio de IA
             const aiResponse = await (0, ai_service_1.chatWithAI)(messages, chat.partner);
             // Validar consistencia del personaje si existe
             if (character) {
-                const validation = character_service_1.CharacterService.validateCharacterConsistency(character, aiResponse);
+                const validation = services_1.CharacterService.validateCharacterConsistency(character, aiResponse);
             }
             // Crear mensaje de IA
             aiMsg = await message_model_1.Message.create({

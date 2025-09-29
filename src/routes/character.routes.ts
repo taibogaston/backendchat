@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { CharacterService } from "../services/character.service";
+import { CharacterService } from "../services";
 import { createChatWithCharacter, getRecommendedCharacters } from "../services/ai.service";
 import { authenticateToken } from "../middleware/auth.middleware";
 

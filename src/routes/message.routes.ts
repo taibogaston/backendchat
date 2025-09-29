@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Message } from "../models/message.model";
 import {Chat} from "../models/chat.model";
 import {chatWithAI} from "../services/ai.service";
-import { CharacterService } from "../services/character.service";
+import { CharacterService } from "../services";
 import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = Router();
